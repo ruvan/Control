@@ -3,7 +3,6 @@ package control;
 import com.rapplogic.xbee.api.*;
 import com.rapplogic.xbee.api.wpan.*;
 import gnu.io.RXTXCommDriver;
-//test
 import java.io.FileOutputStream; //Kept for rewriting config file
 import java.io.FileInputStream;
 import java.io.IOException;
