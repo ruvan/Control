@@ -1,8 +1,8 @@
 <?php
-if(!isset($_SESSION)) {
+
     session_start();
-    $_SESSION['authenticated']=false;
-}
+    
+
 
 if($_SESSION['authenticated']) {
     header('Location: main.php');
