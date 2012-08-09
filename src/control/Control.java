@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sound.midi.*;
+import java.io.*;
 
 //TODO: add Serial
 
@@ -36,7 +37,62 @@ public class Control {
 
         Control ctrl = new Control();
         ctrl.loadConfig();
+        // note,channel,pitch,on/off,pause
+        // cc,channel,cc#,value,pause
         
+        while (true) {
+            try {
+                FileInputStream fstream = new FileInputStream("C:\\midi.txt");
+                // Get the object of DataInputStream
+                DataInputStream in = new DataInputStream(fstream);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String midiLine;
+                // Read each line in the file
+                while ((midiLine = br.readLine()) != null)   {
+                    String[] line = midiLine.split(",");
+                    
+                    if(line[0].equals("note")) {
+                        int channel = Integer.parseInt(line[1]);
+                        int pitch = Integer.parseInt(line[2]);
+                        ShortMessage msg = new ShortMessage();
+                        if(line[3].equals("on")) {
+                            msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, 60);
+                            System.out.println("playing " + pitch + " on channel " + channel);
+                        } else {
+                            msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, 60);
+                            System.out.println("stoping " + pitch + " on channel " + channel);
+                        }
+                        rcvr.send((MidiMessage) msg, 0);
+                        
+                    } else { // else we got a CC
+                        int channel = Integer.parseInt(line[1]);
+                        int cc = Integer.parseInt(line[2]);
+                        int ccValue = Integer.parseInt(line[3]);
+                        ShortMessage msg = new ShortMessage();
+                        msg.setMessage(ShortMessage.CONTROL_CHANGE, channel, cc, ccValue);
+                        rcvr.send((MidiMessage) msg, 0);
+                        System.out.println("sending cc " + cc + "value " + ccValue);
+                    }
+                    
+                    if(Integer.parseInt(line[4]) != 0) {
+                        try{
+                            Thread.currentThread().sleep(Integer.parseInt(line[4]));
+                        } catch (InterruptedException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                    
+                }
+                //Close the input stream
+                in.close();
+            } catch (Exception e){//Catch exception if any
+                System.err.println("Error: " + e.getMessage());
+            }
+            System.out.println("Looping...");
+        }
+        
+        
+        /**
         while (true) {
             try {
                 ShortMessage msg = new ShortMessage();
@@ -71,7 +127,7 @@ public class Control {
             }
             
         }
-        
+       */
        /* 
        while (true) {
           Boolean[] XBeePinValues = ctrl.pollXBeePins(XBeePins);
