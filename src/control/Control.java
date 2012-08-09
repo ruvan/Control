@@ -7,6 +7,9 @@ import java.io.FileOutputStream; //Kept for rewriting config file
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.sound.midi.*;
+
+//TODO: add Serial
 
 /**
  *
@@ -19,6 +22,9 @@ public class Control {
     int XBeeComPort;
     XBee XBee;
     
+    Boolean MIDI;
+    Synthesizer synth;
+    static Receiver rcvr;
     
 
     /**
@@ -30,6 +36,41 @@ public class Control {
 
         Control ctrl = new Control();
         ctrl.loadConfig();
+        
+        while (true) {
+            try {
+                ShortMessage msg = new ShortMessage();
+                msg.setMessage(ShortMessage.NOTE_ON, 0, 63, 60);
+                rcvr.send((MidiMessage) msg, 0);
+            } catch(InvalidMidiDataException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+            
+            try{
+                Thread.currentThread().sleep(1000);
+            }
+            catch(InterruptedException ex){
+                ex.printStackTrace();
+            }
+            
+            try {
+                ShortMessage msg = new ShortMessage();
+                msg.setMessage(ShortMessage.NOTE_OFF, 0, 63, 60);
+                rcvr.send((MidiMessage) msg, 0);
+            } catch(InvalidMidiDataException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+            
+            try{
+                Thread.currentThread().sleep(1000);
+            }
+            catch(InterruptedException ex){
+                ex.printStackTrace();
+            }
+            
+        }
         
        /* 
        while (true) {
@@ -53,7 +94,7 @@ public class Control {
         
     	try {
                // load the properties file
-                FileInputStream propertiesFile = new FileInputStream("config.properties");
+                FileInputStream propertiesFile = new FileInputStream("C:\\Control\\src\\control\\config.properties");
     		prop.load(propertiesFile);
  
                 // XBee vars
@@ -66,6 +107,12 @@ public class Control {
                     }
                     XBee = initializeXBee(); 
                 }
+                
+                // MIDI vars
+                if(prop.getProperty("MIDI").equals("true")) {
+                    initializeMidi();
+                    MIDI = true;
+                } else { MIDI = false; }
                
                 
                 
@@ -74,6 +121,21 @@ public class Control {
                 
     	} catch (IOException ex) {
     		ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Open the MIDI connection
+     */
+    public void initializeMidi() {
+        try {
+            synth = MidiSystem.getSynthesizer();
+            synth.open();
+            rcvr = synth.getReceiver();
+        }
+            catch(MidiUnavailableException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 
