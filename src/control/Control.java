@@ -36,7 +36,7 @@ public class Control {
     Boolean relay;
     SerialPort relaySerialPort;
     InputStream relayInputStream;
-    OutputStream relayOutputStream;
+    static OutputStream relayOutputStream;
     
     /**
      * Runs initialization methods based on given args then enters infinite loop
@@ -46,12 +46,38 @@ public class Control {
     public static void main(String[] args) {
         
         Control ctrl = new Control();
-        
         configPath = args[0];
-        
         ctrl.loadConfig();
         
-        /*
+        while(true) {
+            try {
+                relayOutputStream.write(254);
+                relayOutputStream.write(8);
+                //relayOutputStream.write(1);
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            try{
+                Thread.currentThread().sleep(2000);
+            } catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+            try {
+                relayOutputStream.write(254);
+                relayOutputStream.write(0);
+                //relayOutputStream.write(1);
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+            try{
+                Thread.currentThread().sleep(2000);
+            } catch (InterruptedException ex){
+                ex.printStackTrace();
+            }
+            
+        }
+        
+        /* MIDI
         // note,channel,pitch,on/off,pause
         // cc,channel,cc#,value,pause
         
@@ -109,7 +135,8 @@ public class Control {
             System.out.println("Looping...");
         }
        */ 
-       /* 
+        
+       /* XBee
        while (true) {
           Boolean[] XBeePinValues = ctrl.pollXBeePins(XBeePins);
             for(int i=0; i<=XBeePinValues.length-1; i++) {
@@ -182,9 +209,9 @@ public class Control {
             serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
         } catch (NoSuchPortException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException("No such port");
         } catch (PortInUseException ex) {
-            throw new IOException(ex.getMessage());
+            throw new IOException("Port in use");
         } catch (UnsupportedCommOperationException ex) {
             throw new IOException("Unsupported serial port parametes");
         }
