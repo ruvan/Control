@@ -27,6 +27,7 @@ public class Control {
     Synthesizer synth;
     static Receiver rcvr;
     
+    static String configPath;
 
     /**
      * Runs initialization methods based on given args then enters infinite loop
@@ -34,15 +35,23 @@ public class Control {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
+        
         Control ctrl = new Control();
+        
+        configPath = args[0];
+        
         ctrl.loadConfig();
+        
+        /*
         // note,channel,pitch,on/off,pause
         // cc,channel,cc#,value,pause
         
+        String midiPath = args[1]; 
+        
         while (true) {
             try {
-                FileInputStream fstream = new FileInputStream("C:\\midi.txt");
+                FileInputStream fstream = new FileInputStream(midiPath);
+                //FileInputStream fstream = new FileInputStream("midi.txt");
                 // Get the object of DataInputStream
                 DataInputStream in = new DataInputStream(fstream);
                 BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -90,44 +99,7 @@ public class Control {
             }
             System.out.println("Looping...");
         }
-        
-        
-        /**
-        while (true) {
-            try {
-                ShortMessage msg = new ShortMessage();
-                msg.setMessage(ShortMessage.NOTE_ON, 0, 63, 60);
-                rcvr.send((MidiMessage) msg, 0);
-            } catch(InvalidMidiDataException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-            
-            try{
-                Thread.currentThread().sleep(1000);
-            }
-            catch(InterruptedException ex){
-                ex.printStackTrace();
-            }
-            
-            try {
-                ShortMessage msg = new ShortMessage();
-                msg.setMessage(ShortMessage.NOTE_OFF, 0, 63, 60);
-                rcvr.send((MidiMessage) msg, 0);
-            } catch(InvalidMidiDataException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-            
-            try{
-                Thread.currentThread().sleep(1000);
-            }
-            catch(InterruptedException ex){
-                ex.printStackTrace();
-            }
-            
-        }
-       */
+       */ 
        /* 
        while (true) {
           Boolean[] XBeePinValues = ctrl.pollXBeePins(XBeePins);
@@ -150,8 +122,9 @@ public class Control {
         
     	try {
                // load the properties file
-                FileInputStream propertiesFile = new FileInputStream("C:\\Control\\src\\control\\config.properties");
-    		prop.load(propertiesFile);
+                //FileInputStream propertiesFile = new FileInputStream("C:\\Control\\src\\control\\config.properties");
+                FileInputStream propertiesFile = new FileInputStream(configPath);
+                prop.load(propertiesFile);
  
                 // XBee vars
                 // TODO: Allow pin to be digital or analogue, input or output. Current digital input.
@@ -169,6 +142,10 @@ public class Control {
                     initializeMidi();
                     MIDI = true;
                 } else { MIDI = false; }
+                
+                if(prop.getProperty("Relay").equals("true")) {
+                    // TODO: initialize relay
+                }
                
                 
                 
