@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.sound.midi.*;
 import java.io.*;
+import gnu.io.*;
+
 
 //TODO: add Serial
 
@@ -19,6 +21,8 @@ import java.io.*;
 public class Control {
 
 //  Variables which can be altered    
+    String programName;
+    
     static int[] XBeePins;
     int XBeeComPort;
     XBee XBee;
@@ -29,6 +33,11 @@ public class Control {
     
     static String configPath;
 
+    Boolean relay;
+    SerialPort relaySerialPort;
+    InputStream relayInputStream;
+    OutputStream relayOutputStream;
+    
     /**
      * Runs initialization methods based on given args then enters infinite loop
      * 
@@ -125,7 +134,9 @@ public class Control {
                 //FileInputStream propertiesFile = new FileInputStream("C:\\Control\\src\\control\\config.properties");
                 FileInputStream propertiesFile = new FileInputStream(configPath);
                 prop.load(propertiesFile);
- 
+                
+                programName = prop.getProperty("ProgramName");
+                
                 // XBee vars
                 // TODO: Allow pin to be digital or analogue, input or output. Current digital input.
                 if(prop.getProperty("XBee").equals("true")) {
@@ -144,7 +155,9 @@ public class Control {
                 } else { MIDI = false; }
                 
                 if(prop.getProperty("Relay").equals("true")) {
-                    // TODO: initialize relay
+                    relaySerialPort = initializeSerial(prop.getProperty("RelayComPort"), Integer.parseInt(prop.getProperty("RelayBaud")));
+                    relayInputStream = relaySerialPort.getInputStream();
+                    relayOutputStream = relaySerialPort.getOutputStream();
                 }
                
                 
@@ -155,6 +168,27 @@ public class Control {
     	} catch (IOException ex) {
     		ex.printStackTrace();
         }
+    }
+    
+    /**
+     * Open a serial connection
+     * note: assumes databits=8, stopbits=1, no parity and no flow control.
+     */
+    public SerialPort initializeSerial(String port, int baud) throws IOException {
+        SerialPort serialPort;
+        try {
+            CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(port);
+            serialPort = (SerialPort) portId.open(programName, 5000);
+            serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+        } catch (NoSuchPortException ex) {
+            throw new IOException(ex.getMessage());
+        } catch (PortInUseException ex) {
+            throw new IOException(ex.getMessage());
+        } catch (UnsupportedCommOperationException ex) {
+            throw new IOException("Unsupported serial port parametes");
+        }
+        return serialPort;
     }
     
     /**
