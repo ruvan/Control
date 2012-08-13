@@ -27,13 +27,13 @@ public class Control {
     int XBeeComPort;
     XBee XBee;
     
-    Boolean MIDI;
+    static Boolean MIDI;
     Synthesizer synth;
     static Receiver rcvr;
     
     static String configPath;
 
-    Boolean relay;
+    static Boolean relay;
     SerialPort relaySerialPort;
     InputStream relayInputStream;
     static OutputStream relayOutputStream;
@@ -47,12 +47,16 @@ public class Control {
         
         Control ctrl = new Control();
         configPath = args[0];
+        String midiPath = args[1];
         ctrl.loadConfig();
         
         while(true) {
+        if(relay==true) {
             try {
-                relayOutputStream.write(254);
-                relayOutputStream.write(8);
+                String test ="254";
+                relayOutputStream.write(test.getBytes());
+                test ="8";
+                relayOutputStream.write(test.getBytes());
                 //relayOutputStream.write(1);
             } catch (IOException ex) {
                 ex.getMessage();
@@ -63,8 +67,10 @@ public class Control {
                 ex.printStackTrace();
             }
             try {
-                relayOutputStream.write(254);
-                relayOutputStream.write(0);
+                String test ="254";
+                relayOutputStream.write(test.getBytes());
+                test ="0";
+                relayOutputStream.write(test.getBytes());
                 //relayOutputStream.write(1);
             } catch (IOException ex) {
                 ex.getMessage();
@@ -77,13 +83,11 @@ public class Control {
             
         }
         
-        /* MIDI
+        // MIDI
         // note,channel,pitch,on/off,pause
         // cc,channel,cc#,value,pause
         
-        String midiPath = args[1]; 
-        
-        while (true) {
+        if(MIDI==true) {
             try {
                 FileInputStream fstream = new FileInputStream(midiPath);
                 //FileInputStream fstream = new FileInputStream("midi.txt");
@@ -134,8 +138,8 @@ public class Control {
             }
             System.out.println("Looping...");
         }
-       */ 
         
+        } 
        /* XBee
        while (true) {
           Boolean[] XBeePinValues = ctrl.pollXBeePins(XBeePins);
@@ -177,7 +181,7 @@ public class Control {
                 
                 // MIDI vars
                 if(prop.getProperty("MIDI").equals("true")) {
-                    initializeMidi();
+                    initializeMidi(prop.getProperty("MIDIDeviceName"));
                     MIDI = true;
                 } else { MIDI = false; }
                 
@@ -221,13 +225,21 @@ public class Control {
     /**
      * Open the MIDI connection
      */
-    public void initializeMidi() {
+    public void initializeMidi(String MIDIDeviceName) {
         try {
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-            rcvr = synth.getReceiver();
-        }
-            catch(MidiUnavailableException e) {
+            MidiDevice.Info[] MIDIDevices = MidiSystem.getMidiDeviceInfo();
+            for (int i=0; i<MIDIDevices.length; i++) {
+                if(MIDIDevices[i].getName().equalsIgnoreCase(MIDIDeviceName)) {
+                    MidiDevice MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
+                    MIDIDevice.open();
+                    rcvr = MIDIDevice.getReceiver();
+                    break;
+                }
+            }
+            //synth = MidiSystem.getSynthesizer();
+            //synth.open();
+            //rcvr = synth.getReceiver();
+        } catch(MidiUnavailableException e) {
             e.printStackTrace();
             System.exit(1);
         }
