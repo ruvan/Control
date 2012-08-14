@@ -33,7 +33,7 @@ public class Control {
     
     static String configPath;
 
-    static Boolean relay;
+    static Boolean relay = false;
     SerialPort relaySerialPort;
     InputStream relayInputStream;
     static OutputStream relayOutputStream;
@@ -233,8 +233,11 @@ public class Control {
                     MidiDevice MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
                     MIDIDevice.open();
                     rcvr = MIDIDevice.getReceiver();
-                    break;
+                    System.out.println("Device Found! Playing data on:");
+                    System.out.println(MIDIDevices[i].getName());
                 }
+               
+                
             }
             //synth = MidiSystem.getSynthesizer();
             //synth.open();
