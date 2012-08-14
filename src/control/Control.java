@@ -227,18 +227,23 @@ public class Control {
      */
     public void initializeMidi(String MIDIDeviceName) {
         try {
+            MidiDevice MIDIDevice;
             MidiDevice.Info[] MIDIDevices = MidiSystem.getMidiDeviceInfo();
+            System.out.println("Devices found:");
             for (int i=0; i<MIDIDevices.length; i++) {
+                System.out.println(MIDIDevices[i].getName());
+            }
+            for(int i=0; i<MIDIDevices.length; i++) {
                 if(MIDIDevices[i].getName().equalsIgnoreCase(MIDIDeviceName)) {
-                    MidiDevice MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
+                    MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
+                    System.out.println("Attempting to play on " + MIDIDevices[i].getName());
                     MIDIDevice.open();
                     rcvr = MIDIDevice.getReceiver();
-                    System.out.println("Device Found! Playing data on:");
-                    System.out.println(MIDIDevices[i].getName());
                 }
-               
-                
             }
+            
+            
+            //System.out.println(MIDIDevice.);
             //synth = MidiSystem.getSynthesizer();
             //synth.open();
             //rcvr = synth.getReceiver();
