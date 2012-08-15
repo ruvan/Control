@@ -98,6 +98,7 @@ public class Control {
                 String midiLine;
                 // Read each line in the file
                 while ((midiLine = br.readLine()) != null)   {
+                    if(midiLine.charAt(0)!= (char) '#') {
                     String[] line = midiLine.split(",");
                     
                     if(line[0].equals("note")) {
@@ -130,7 +131,7 @@ public class Control {
                             ex.printStackTrace();
                         }
                     }
-                    
+                    }
                 }
                 //Close the input stream
                 in.close();
