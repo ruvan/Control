@@ -86,6 +86,7 @@ public class Control {
         // MIDI
         // note,channel,pitch,on/off,pause
         // cc,channel,cc#,value,pause
+        // Microsoft GS Wavetable SW Synth
         
         if(MIDI==true) {
             try {
@@ -236,17 +237,14 @@ public class Control {
             for(int i=0; i<MIDIDevices.length; i++) {
                 if(MIDIDevices[i].getName().equalsIgnoreCase(MIDIDeviceName)) {
                     MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
-                    System.out.println("Attempting to play on " + MIDIDevices[i].getName());
-                    MIDIDevice.open();
-                    rcvr = MIDIDevice.getReceiver();
+                    if(MidiSystem.getMidiDevice(MIDIDevices[i]).getMaxReceivers()!=0) {
+                        MIDIDevice = MidiSystem.getMidiDevice(MIDIDevices[i]);
+                        System.out.println("Attempting to play on " + MIDIDevices[i].getName());
+                        MIDIDevice.open();
+                        rcvr = MIDIDevice.getReceiver();
+                    }
                 }
             }
-            
-            
-            //System.out.println(MIDIDevice.);
-            //synth = MidiSystem.getSynthesizer();
-            //synth.open();
-            //rcvr = synth.getReceiver();
         } catch(MidiUnavailableException e) {
             e.printStackTrace();
             System.exit(1);
