@@ -1,10 +1,8 @@
 <?php
 
     session_start();
-    
 
-
-if($_SESSION['authenticated']) {
+if(isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
     header('Location: main.php');
 }
 

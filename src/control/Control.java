@@ -51,29 +51,7 @@ public class Control {
 
             // Relay Section
             if (relay == true) {
-                System.out.println("Starting relay loop");
-                try {
-                    relayOutputStream.write(254);
-                    relayOutputStream.write(8);
-                } catch (IOException ex) {
-                    ex.getMessage();
-                }
-                try {
-                    Thread.currentThread().sleep(2000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    relayOutputStream.write(254);
-                    relayOutputStream.write(0);
-                } catch (IOException ex) {
-                    ex.getMessage();
-                }
-                try {
-                    Thread.currentThread().sleep(2000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+                ctrl.playRelay();
             }
 
             // MIDI
@@ -290,5 +268,35 @@ public class Control {
         }
 
         return XBeePinValues;
+    }
+    
+    /**
+     * Allows Geoffrey to add his own relay code.
+     * 
+     */
+    public void playRelay(){
+        System.out.println("Starting relay loop");
+                try {
+                    relayOutputStream.write(254);
+                    relayOutputStream.write(8);
+                } catch (IOException ex) {
+                    ex.getMessage();
+                }
+                try {
+                    Thread.currentThread().sleep(2000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    relayOutputStream.write(254);
+                    relayOutputStream.write(0);
+                } catch (IOException ex) {
+                    ex.getMessage();
+                }
+                try {
+                    Thread.currentThread().sleep(2000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
     }
 }
