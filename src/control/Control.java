@@ -34,6 +34,7 @@ public class Control {
     SerialPort relaySerialPort;
     InputStream relayInputStream;
     static OutputStream relayOutputStream;
+    static RelaySequencer relaySequencer;
 
     /**
      * Runs initialization methods based on given args then enters infinite loop
@@ -51,7 +52,8 @@ public class Control {
 
             // Relay Section
             if (relay == true) {
-                ctrl.playRelay();
+                //ctrl.playRelay();
+                relaySequencer.runSequence();
             }
 
             // MIDI
@@ -163,6 +165,7 @@ public class Control {
                 relaySerialPort = initializeSerial(prop.getProperty("RelayComPort"), Integer.parseInt(prop.getProperty("RelayBaud")));
                 relayInputStream = relaySerialPort.getInputStream();
                 relayOutputStream = relaySerialPort.getOutputStream();
+                relaySequencer = new RelaySequencer(relaySerialPort, relayInputStream, relayOutputStream);
             }
 
 
@@ -275,28 +278,30 @@ public class Control {
      * 
      */
     public void playRelay(){
-        System.out.println("Starting relay loop");
-                try {
-                    relayOutputStream.write(254);
-                    relayOutputStream.write(8);
-                } catch (IOException ex) {
-                    ex.getMessage();
-                }
-                try {
-                    Thread.currentThread().sleep(2000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    relayOutputStream.write(254);
-                    relayOutputStream.write(0);
-                } catch (IOException ex) {
-                    ex.getMessage();
-                }
-                try {
-                    Thread.currentThread().sleep(2000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+        
+        // Following has been depreciated to allow Geoffrey to work within RelaySequencer 'sandbox'
+//        System.out.println("Starting relay loop");
+//                try {
+//                    relayOutputStream.write(254);
+//                    relayOutputStream.write(8);
+//                } catch (IOException ex) {
+//                    ex.getMessage();
+//                }
+//                try {
+//                    Thread.currentThread().sleep(2000);
+//                } catch (InterruptedException ex) {
+//                    ex.printStackTrace();
+//                }
+//                try {
+//                    relayOutputStream.write(254);
+//                    relayOutputStream.write(0);
+//                } catch (IOException ex) {
+//                    ex.getMessage();
+//                }
+//                try {
+//                    Thread.currentThread().sleep(2000);
+//                } catch (InterruptedException ex) {
+//                    ex.printStackTrace();
+//                }
     }
 }
