@@ -35,6 +35,10 @@ public class Control {
     InputStream relayInputStream;
     static OutputStream relayOutputStream;
     static RelaySequencer relaySequencer;
+    
+    // Triangle / Relay
+    static Boolean[][] relayTable = new Boolean[19][8];
+    static BigTriangle[][] bigTriangle = new BigTriangle[3][12];
 
     /**
      * Runs initialization methods based on given args then enters infinite loop
@@ -47,13 +51,14 @@ public class Control {
         configPath = args[0];
         String midiPath = args[1];
         ctrl.loadConfig();
-
+        initialiseTriangles();
+        
         while (true) {
 
             // Relay Section
             if (relay == true) {
-                //ctrl.playRelay();
-                relaySequencer.runSequence();
+                
+                //relaySequencer.runSequence();
             }
 
             // MIDI
@@ -274,34 +279,14 @@ public class Control {
     }
     
     /**
-     * Allows Geoffrey to add his own relay code.
-     * 
+     * This method should create all triangles big and small
+     * and populate the triangle / relay related tables.
      */
-    public void playRelay(){
-        
-        // Following has been depreciated to allow Geoffrey to work within RelaySequencer 'sandbox'
-//        System.out.println("Starting relay loop");
-//                try {
-//                    relayOutputStream.write(254);
-//                    relayOutputStream.write(8);
-//                } catch (IOException ex) {
-//                    ex.getMessage();
-//                }
-//                try {
-//                    Thread.currentThread().sleep(2000);
-//                } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
-//                }
-//                try {
-//                    relayOutputStream.write(254);
-//                    relayOutputStream.write(0);
-//                } catch (IOException ex) {
-//                    ex.getMessage();
-//                }
-//                try {
-//                    Thread.currentThread().sleep(2000);
-//                } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
-//                }
+    public static void initialiseTriangles() {
+        for(int level = 1; level <= 3; level++){
+            for(int triangleNumber = 1; triangleNumber <= 12; triangleNumber++){
+                bigTriangle[level-1][triangleNumber-1] = new BigTriangle(level, triangleNumber, relayTable);
+            }
+        }
     }
 }
