@@ -170,7 +170,7 @@ public class Control {
                 relaySerialPort = initializeSerial(prop.getProperty("RelayComPort"), Integer.parseInt(prop.getProperty("RelayBaud")));
                 relayInputStream = relaySerialPort.getInputStream();
                 relayOutputStream = relaySerialPort.getOutputStream();
-                relaySequencer = new RelaySequencer(relaySerialPort, relayInputStream, relayOutputStream);
+                relaySequencer = new RelaySequencer(relaySerialPort, relayInputStream, relayOutputStream, relayTable, bigTriangle);
             }
 
 
@@ -283,10 +283,21 @@ public class Control {
      * and populate the triangle / relay related tables.
      */
     public static void initialiseTriangles() {
-        for(int level = 1; level <= 3; level++){
-            for(int triangleNumber = 1; triangleNumber <= 12; triangleNumber++){
-                bigTriangle[level-1][triangleNumber-1] = new BigTriangle(level, triangleNumber, relayTable);
+        for(int level = 0; level < 3; level++){
+            for(int triangleNumber = 0; triangleNumber < 12; triangleNumber++){
+                bigTriangle[level][triangleNumber] = new BigTriangle(level, triangleNumber, relayTable);
             }
+        }
+        
+        // initialise the rest of the relayTable
+        // PSU's and unsed 7th relay
+        for(int i=0; i<19; i++){
+            relayTable[i][0] = new Boolean(false);
+            relayTable[i][7] = new Boolean(false);
+        }
+        // bank 1
+        for(int i=1; i<7; i++){
+            relayTable[0][i] = new Boolean(false);
         }
     }
 }

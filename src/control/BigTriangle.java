@@ -40,7 +40,7 @@ public class BigTriangle {
     public void setTriangles(int[] triangleType, int level, int triangleNumber, Boolean[][] relayTable){
         for(int i=0; i<3; i++) {
             Boolean tempBool = new Boolean(false);
-            relayTable[triangleType[i]+(level-1)*6][(triangleNumber/2)+1] = tempBool;
+            relayTable[triangleType[i]+(level)*6-1][(triangleNumber/2)+1] = tempBool;
             subTriangles[i] = new SmallTriangle(triangleType[i],tempBool);
         }
     }

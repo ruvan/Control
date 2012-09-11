@@ -18,13 +18,16 @@ public class RelaySequencer {
     SerialPort relaySerialPort;
     InputStream relayInputStream;
     OutputStream relayOutputStream;
+    Boolean[][] relayTable;
+    BigTriangle[][] bigTriangle;
 
-    public RelaySequencer(SerialPort relaySerialPort, InputStream relayInputStream, OutputStream relayOutputStream) {
+    public RelaySequencer(SerialPort relaySerialPort, InputStream relayInputStream, OutputStream relayOutputStream, Boolean[][] relayTable, BigTriangle[][] bigTriangle) {
         this.relaySerialPort = relaySerialPort;
         this.relayInputStream = relayInputStream;
         this.relayOutputStream = relayOutputStream;
+        this.bigTriangle = bigTriangle;
     }
-    
+
     public void send(int i) {
         try {
             relayOutputStream.write(i);
@@ -33,9 +36,61 @@ public class RelaySequencer {
         }
     }
 
+    public void sleep(int time) {
+        try {
+            Thread.currentThread().sleep(time);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void runSequence() {
         System.out.println("Starting relay loop");
-        send(254);
-        send(8);
+        
+    }
+
+    public void turnOff() {
+        //pull in all actuators
+        for (int bank = 1; bank < 19; bank++) {
+            for (int relay = 1; relay < 8; relay++) {
+                relayTable[bank][relay] = false;
+            }
+        }
+        updateRelays();
+
+        // TODO: put in wait command, be weary of this pausing other aspects of totem.
+
+        // turn off PSU's
+        for (int bank = 0; bank < 19; bank++) {
+            relayTable[bank][0] = false;
+        }
+        // relay coil 12V supply
+        relayTable[0][1] = false;
+        updateRelays();
+    }
+
+    public void turnOn() {
+        // turn on all PSU's
+        for (int bank = 0; bank < 19; bank++) {
+            relayTable[bank][0] = true;
+        }
+        // relay coil 12V supply
+        relayTable[0][1] = true;
+        updateRelays();
+    }
+
+    public void updateRelays() {
+        for (int bank = 0; bank < 19; bank++) {
+            int command = 0;
+            for (int relay = 0; relay < 8; relay++) {
+                if (relayTable[bank][relay]) {
+                    command += Math.pow(2, relay);
+                }
+            }
+            send(254);
+            send(140);
+            send(command);
+            send(bank + 1); // +1 because ProXR starts at 1
+        }
     }
 }
