@@ -45,8 +45,17 @@ public class RelaySequencer {
     }
 
     public void runSequence() {
-        System.out.println("Starting relay loop");
-        
+        turnOn();
+        System.out.println("Starting chase bloom");
+        for(int level = 0; level < 3; level++){
+            for(int triangle = 0; triangle < 12; triangle++){
+                bigTriangle[level][triangle].allOn();
+                updateRelays();
+                sleep(2);
+                bigTriangle[level][triangle].allOff();
+                updateRelays();
+            }
+        }
     }
 
     public void turnOff() {

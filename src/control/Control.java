@@ -57,8 +57,7 @@ public class Control {
 
             // Relay Section
             if (relay == true) {
-                
-                //relaySequencer.runSequence();
+                relaySequencer.runSequence();
             }
 
             // MIDI

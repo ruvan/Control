@@ -45,6 +45,18 @@ public class BigTriangle {
         }
     }
     
+    public void allOn(){
+        for(int i=0; i<3; i++) {
+            subTriangles[i].state = true;
+        }
+    }
+       
+    public void allOff(){
+        for(int i=0; i<3; i++) {
+            subTriangles[i].state = false;
+        }
+    }
+    
     
     
 }
